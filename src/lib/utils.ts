@@ -19,7 +19,7 @@ export function formatDuration(milliseconds: number | null): string {
 }
 
 export function formatPhoneNumber(phone: string | null): string {
-  if (!phone) return '-'
+  if (!phone || typeof phone !== 'string') return '-'
   
   const cleaned = phone.replace(/\D/g, '')
   
