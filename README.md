@@ -27,7 +27,11 @@ npm install
 ```
 
 2. Configure as variáveis de ambiente:
-   - As credenciais já estão no arquivo `.env`
+   - Copie o arquivo `.env.example` para `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   - As credenciais do Supabase já estão configuradas
    - **IMPORTANTE**: Não commite o arquivo `.env` no git
 
 3. Inicie o servidor de desenvolvimento:
