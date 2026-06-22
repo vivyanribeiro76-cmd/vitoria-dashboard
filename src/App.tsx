@@ -65,7 +65,9 @@ function App() {
   }
 
   const totalCalls = filteredCalls.length
-  const answeredCalls = filteredCalls.filter(c => c.voicemail === false).length
+  const answeredCalls = filteredCalls.filter(c => 
+    c.outcome?.toLowerCase() === 'interessado' || c.outcome?.toLowerCase() === 'retornar_depois'
+  ).length
   const voicemailCalls = filteredCalls.filter(c => c.voicemail === true).length
   const totalDurationMs = filteredCalls.reduce((acc, call) => acc + (call.duration || 0), 0)
   const averageDuration = totalDurationMs / (filteredCalls.length || 1)
