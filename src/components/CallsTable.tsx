@@ -3,12 +3,34 @@ import { RetellCall } from '@/lib/database.types'
 import { formatDuration, formatPhoneNumber, cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { useState, useMemo } from 'react'
 
 interface CallsTableProps {
   calls: RetellCall[]
 }
 
 export function CallsTable({ calls }: CallsTableProps) {
+  const [filters, setFilters] = useState({
+    nome: '',
+    telefone: '',
+    status: '',
+    voicemail: '',
+    outcome: ''
+  })
+
+  const filteredCalls = useMemo(() => {
+    return calls.filter(call => {
+      const matchNome = !filters.nome || call.nome?.toLowerCase().includes(filters.nome.toLowerCase())
+      const matchTelefone = !filters.telefone || call.telefone?.includes(filters.telefone)
+      const matchStatus = !filters.status || call.status?.toLowerCase().includes(filters.status.toLowerCase())
+      const matchVoicemail = !filters.voicemail || 
+        (filters.voicemail === 'sim' && call.voicemail === true) ||
+        (filters.voicemail === 'nao' && call.voicemail === false)
+      const matchOutcome = !filters.outcome || call.outcome?.toLowerCase().includes(filters.outcome.toLowerCase())
+      
+      return matchNome && matchTelefone && matchStatus && matchVoicemail && matchOutcome
+    })
+  }, [calls, filters])
 
   const getStatusBadge = (status: string | null) => {
     const isComplete = status?.toLowerCase() === 'completed'
@@ -72,9 +94,62 @@ export function CallsTable({ calls }: CallsTableProps) {
                 Resumo
               </th>
             </tr>
+            <tr className="bg-white">
+              <th className="px-6 py-2">
+                <input
+                  type="text"
+                  placeholder="Filtrar nome..."
+                  value={filters.nome}
+                  onChange={(e) => setFilters({...filters, nome: e.target.value})}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </th>
+              <th className="px-6 py-2">
+                <input
+                  type="text"
+                  placeholder="Filtrar telefone..."
+                  value={filters.telefone}
+                  onChange={(e) => setFilters({...filters, telefone: e.target.value})}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </th>
+              <th className="px-6 py-2">
+                <input
+                  type="text"
+                  placeholder="Filtrar status..."
+                  value={filters.status}
+                  onChange={(e) => setFilters({...filters, status: e.target.value})}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </th>
+              <th className="px-6 py-2">
+                <select
+                  value={filters.voicemail}
+                  onChange={(e) => setFilters({...filters, voicemail: e.target.value})}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Todos</option>
+                  <option value="sim">Sim</option>
+                  <option value="nao">Não</option>
+                </select>
+              </th>
+              <th className="px-6 py-2">
+                <input
+                  type="text"
+                  placeholder="Filtrar outcome..."
+                  value={filters.outcome}
+                  onChange={(e) => setFilters({...filters, outcome: e.target.value})}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </th>
+              <th className="px-6 py-2"></th>
+              <th className="px-6 py-2"></th>
+              <th className="px-6 py-2"></th>
+              <th className="px-6 py-2"></th>
+            </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {calls.map((call, index) => (
+            {filteredCalls.map((call, index) => (
               <tr key={call.call_id || index} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {call.nome || '-'}
@@ -125,7 +200,7 @@ export function CallsTable({ calls }: CallsTableProps) {
           </tbody>
         </table>
       </div>
-      {calls.length === 0 && (
+      {filteredCalls.length === 0 && (
         <div className="text-center py-12 text-gray-500">
           Nenhuma chamada encontrada
         </div>
