@@ -18,10 +18,14 @@ export function formatDuration(milliseconds: number | null): string {
   return `${totalSeconds}s`
 }
 
-export function formatPhoneNumber(phone: string | null): string {
-  if (!phone || typeof phone !== 'string') return '-'
+export function formatPhoneNumber(phone: string | number | null): string {
+  if (!phone) return '-'
   
-  const cleaned = phone.replace(/\D/g, '')
+  // Converter para string se for número
+  const phoneStr = typeof phone === 'number' ? phone.toString() : phone
+  if (typeof phoneStr !== 'string') return '-'
+  
+  const cleaned = phoneStr.replace(/\D/g, '')
   
   // Telefone com código do país (55) + DDD (2 dígitos) + número (9 dígitos) = 13 dígitos
   if (cleaned.length === 13 && cleaned.startsWith('55')) {
@@ -36,5 +40,5 @@ export function formatPhoneNumber(phone: string | null): string {
     return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`
   }
   
-  return phone
+  return phoneStr
 }
