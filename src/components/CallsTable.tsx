@@ -18,15 +18,36 @@ export function CallsTable({ calls }: CallsTableProps) {
     outcome: ''
   })
 
+  // Extrair valores únicos para os dropdowns
+  const uniqueNomes = useMemo(() => {
+    const nomes = calls.map(c => c.nome).filter(Boolean) as string[]
+    return Array.from(new Set(nomes)).sort()
+  }, [calls])
+
+  const uniqueTelefones = useMemo(() => {
+    const telefones = calls.map(c => c.telefone).filter(Boolean) as string[]
+    return Array.from(new Set(telefones)).sort()
+  }, [calls])
+
+  const uniqueStatus = useMemo(() => {
+    const statuses = calls.map(c => c.status).filter(Boolean) as string[]
+    return Array.from(new Set(statuses)).sort()
+  }, [calls])
+
+  const uniqueOutcomes = useMemo(() => {
+    const outcomes = calls.map(c => c.outcome).filter(Boolean) as string[]
+    return Array.from(new Set(outcomes)).sort()
+  }, [calls])
+
   const filteredCalls = useMemo(() => {
     return calls.filter(call => {
-      const matchNome = !filters.nome || call.nome?.toLowerCase().includes(filters.nome.toLowerCase())
-      const matchTelefone = !filters.telefone || call.telefone?.includes(filters.telefone)
-      const matchStatus = !filters.status || call.status?.toLowerCase().includes(filters.status.toLowerCase())
+      const matchNome = !filters.nome || call.nome === filters.nome
+      const matchTelefone = !filters.telefone || call.telefone === filters.telefone
+      const matchStatus = !filters.status || call.status === filters.status
       const matchVoicemail = !filters.voicemail || 
         (filters.voicemail === 'sim' && call.voicemail === true) ||
         (filters.voicemail === 'nao' && call.voicemail === false)
-      const matchOutcome = !filters.outcome || call.outcome?.toLowerCase().includes(filters.outcome.toLowerCase())
+      const matchOutcome = !filters.outcome || call.outcome === filters.outcome
       
       return matchNome && matchTelefone && matchStatus && matchVoicemail && matchOutcome
     })
@@ -96,31 +117,40 @@ export function CallsTable({ calls }: CallsTableProps) {
             </tr>
             <tr className="bg-white">
               <th className="px-6 py-2">
-                <input
-                  type="text"
-                  placeholder="Filtrar nome..."
+                <select
                   value={filters.nome}
                   onChange={(e) => setFilters({...filters, nome: e.target.value})}
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">Todos</option>
+                  {uniqueNomes.map(nome => (
+                    <option key={nome} value={nome}>{nome}</option>
+                  ))}
+                </select>
               </th>
               <th className="px-6 py-2">
-                <input
-                  type="text"
-                  placeholder="Filtrar telefone..."
+                <select
                   value={filters.telefone}
                   onChange={(e) => setFilters({...filters, telefone: e.target.value})}
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">Todos</option>
+                  {uniqueTelefones.map(tel => (
+                    <option key={tel} value={tel}>{tel}</option>
+                  ))}
+                </select>
               </th>
               <th className="px-6 py-2">
-                <input
-                  type="text"
-                  placeholder="Filtrar status..."
+                <select
                   value={filters.status}
                   onChange={(e) => setFilters({...filters, status: e.target.value})}
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">Todos</option>
+                  {uniqueStatus.map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
               </th>
               <th className="px-6 py-2">
                 <select
@@ -134,13 +164,16 @@ export function CallsTable({ calls }: CallsTableProps) {
                 </select>
               </th>
               <th className="px-6 py-2">
-                <input
-                  type="text"
-                  placeholder="Filtrar outcome..."
+                <select
                   value={filters.outcome}
                   onChange={(e) => setFilters({...filters, outcome: e.target.value})}
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">Todos</option>
+                  {uniqueOutcomes.map(outcome => (
+                    <option key={outcome} value={outcome}>{outcome}</option>
+                  ))}
+                </select>
               </th>
               <th className="px-6 py-2"></th>
               <th className="px-6 py-2"></th>
