@@ -12,7 +12,6 @@ interface CallsTableProps {
 export function CallsTable({ calls }: CallsTableProps) {
   const [filters, setFilters] = useState({
     nome: '',
-    telefone: '',
     status: '',
     voicemail: '',
     outcome: ''
@@ -22,11 +21,6 @@ export function CallsTable({ calls }: CallsTableProps) {
   const uniqueNomes = useMemo(() => {
     const nomes = calls.map(c => c.nome).filter(Boolean) as string[]
     return Array.from(new Set(nomes)).sort()
-  }, [calls])
-
-  const uniqueTelefones = useMemo(() => {
-    const telefones = calls.map(c => c.telefone).filter(Boolean) as string[]
-    return Array.from(new Set(telefones)).sort()
   }, [calls])
 
   const uniqueStatus = useMemo(() => {
@@ -42,14 +36,13 @@ export function CallsTable({ calls }: CallsTableProps) {
   const filteredCalls = useMemo(() => {
     return calls.filter(call => {
       const matchNome = !filters.nome || call.nome === filters.nome
-      const matchTelefone = !filters.telefone || call.telefone === filters.telefone
       const matchStatus = !filters.status || call.status === filters.status
       const matchVoicemail = !filters.voicemail || 
         (filters.voicemail === 'sim' && call.voicemail === true) ||
         (filters.voicemail === 'nao' && call.voicemail === false)
       const matchOutcome = !filters.outcome || call.outcome === filters.outcome
       
-      return matchNome && matchTelefone && matchStatus && matchVoicemail && matchOutcome
+      return matchNome && matchStatus && matchVoicemail && matchOutcome
     })
   }, [calls, filters])
 
@@ -128,18 +121,7 @@ export function CallsTable({ calls }: CallsTableProps) {
                   ))}
                 </select>
               </th>
-              <th className="px-6 py-2">
-                <select
-                  value={filters.telefone}
-                  onChange={(e) => setFilters({...filters, telefone: e.target.value})}
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Todos</option>
-                  {uniqueTelefones.map(tel => (
-                    <option key={tel} value={tel}>{tel}</option>
-                  ))}
-                </select>
-              </th>
+              <th className="px-6 py-2"></th>
               <th className="px-6 py-2">
                 <select
                   value={filters.status}
